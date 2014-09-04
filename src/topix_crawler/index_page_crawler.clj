@@ -44,10 +44,12 @@
                          next-pg-anchor))
              
              next-uri-to-get
-             (uri/resolve-uri uri-to-get
-                              (-> paginator
-                                  :attrs
-                                  :href))]
+             (if paginator
+               (uri/resolve-uri uri-to-get
+                                (-> paginator
+                                    :attrs
+                                    :href))
+               nil)]
          (do (write-bodies writer
                            uri-to-get
                            body)
