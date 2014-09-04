@@ -47,10 +47,13 @@
                                     (re-find #"list/$" l))))
                          links)
              
-             resolved-links (map
+             resolved-links (filter
                              (fn [l]
-                               (uri/resolve-uri start l))
-                             list-links)
+                               (re-find #"/forum/" l))
+                             (map
+                              (fn [l]
+                                (uri/resolve-uri start l))
+                              list-links))
              
              new-queue (concat (rest queue)
                                (clojure.set/difference (set resolved-links)
