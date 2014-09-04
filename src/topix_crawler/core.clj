@@ -1,6 +1,14 @@
-(ns topix-crawler.core)
+(ns topix-crawler.core
+  (:require [clojure.tools.cli :refer [parse-opts]]
+            [topix-crawler.list :as list]))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(def cmdline-options
+  [["-c" "--crawl" "Crawl bro"]])
+
+(def topix-all-forums-uri "http://www.topix.com/forum/dir")
+
+(defn -main
+  [& args]
+  (let [options (:options
+                 (parse-opts args cmdline-options))]
+    (list/crawl topix-all-forums-uri)))
