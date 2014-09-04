@@ -28,7 +28,12 @@
        (let [start (first queue)
              _     (println :downloading start)
              body  (:body
-                    (client/get start))
+                    (client/get start
+                                {:headers
+                                 {"User-Agent"
+                                  (str "Mozilla/5.0 (Windows NT 6.1;) Gecko/20100101 Firefox/13.0.1"
+                                       " lemurproject crawler, version 1.0"
+                                       " contact: http://boston.lti.cs.cmu.edu/clueweb12/")}}))
              
             anchors (-> body
                         (StringReader.)
