@@ -23,39 +23,42 @@
      (crawl [start] (set [])))
 
   ([queue crawled]
-     (let [start (first queue)
-           _     (println start)
-           body  (:body
-                  (client/get start))
-
-           anchors (-> body
-                       (StringReader.)
-                       html/html-resource
-                       (html/select [:a]))
-
-           links (map
-                  (fn [a]
-                    (-> a :attrs :href))
-                  anchors)
-
-           list-links (filter
-                       (fn [l]
-                         (and l
-                              (or (re-find #"list$" l)
-                                  (re-find #"list/$" l))))
-                       links)
-           
-           resolved-links (map
-                           (fn [l]
-                             (uri/resolve-uri start l))
-                           list-links)
-
-           new-queue (concat (rest queue)
-                             (clojure.set/difference (set resolved-links)
-                                                     (set queue)
-                                                     (set crawled)))
-           
-           new-crawled (clojure.set/union crawled
-                                          (set [start]))]
-       (do (write-bodies start body)
-           (recur new-queue new-crawled)))))
+     (if (empty? queue)
+       (println :done)
+       (let [start (first queue)
+             _     (println :downloading start)
+             body  (:body
+                    (client/get start))
+             
+            anchors (-> body
+                        (StringReader.)
+                        html/html-resource
+                        (html/select [:a]))
+             
+             links (map
+                    (fn [a]
+                      (-> a :attrs :href))
+                    anchors)
+             
+             list-links (filter
+                         (fn [l]
+                           (and l
+                                (or (re-find #"list$" l)
+                                    (re-find #"list/$" l))))
+                         links)
+             
+             resolved-links (map
+                             (fn [l]
+                               (uri/resolve-uri start l))
+                             list-links)
+             
+             new-queue (concat (rest queue)
+                               (clojure.set/difference (set resolved-links)
+                                                       (set queue)
+                                                       (set crawled)))
+             
+             new-crawled (clojure.set/union crawled
+                                            (set [start]))]
+         (do (write-bodies start body)
+             (Thread/sleep (+ 1500 (rand-int 7000)))
+             (recur new-queue new-crawled))))))
