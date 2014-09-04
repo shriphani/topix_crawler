@@ -1,8 +1,9 @@
 (ns topix-crawler.extract-topic-names
   "Extract topic names"
-  (:require [net.cgrand.enlive-html :as html]
+  (:require [clojure.java.io :as io]
+            [net.cgrand.enlive-html :as html]
             (org.bovinegenius [exploding-fish :as uri]))
-  (:import [java.io StringReader]))
+  (:import [java.io StringReader PushbackReader]))
 
 (defn extract-forum-names
   [url body]
@@ -30,3 +31,20 @@
                      resolved-hrefs)]
     (doseq [l forum-hrefs]
       (println l))))
+
+(defn process-dir-corpus
+  [corpus-file]
+  (let [rdr (-> corpus-file
+                io/reader
+                (PushbackReader.))
+        
+        records (take-while
+                 identity
+                 (try (repeatedly
+                       (fn []
+                         (read rdr)))
+                      (catch Exception e nil)))]
+    (doall
+     (doseq [record records]
+       (extract-forum-names (:uri record)
+                            (:body record))))))

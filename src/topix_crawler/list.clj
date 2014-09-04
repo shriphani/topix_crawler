@@ -7,10 +7,11 @@
   (:import [java.io StringReader])
   (:use [clojure.pprint :only [pprint]]))
 
-(def writer (io/writer (str "/bos/tmp19/spalakod/topix/"
-                            "topix-list.corpus")
-                       :append
-                       true))
+(def writer nil ;; (io/writer (str "/bos/tmp19/spalakod/topix/"
+                ;;             "topix-list.corpus")
+                ;;        :append
+                ;;        true)
+  )
 
 (defn write-bodies
   [uri body]

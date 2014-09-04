@@ -16,6 +16,5 @@
     (cond (:crawl options)
           (list/crawl topix-all-forums-uri)
 
-          ;; FIX: Read corpus file first
           (:extract options)
-          (extract/extract-forum-names (:extract options)))))
+          (extract/process-dir-corpus (:extract options)))))
