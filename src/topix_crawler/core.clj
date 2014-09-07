@@ -3,13 +3,15 @@
             [clojure.tools.cli :refer [parse-opts]]
             [topix-crawler.list :as list]
             [topix-crawler.extract-topic-names :as extract]
-            [topix-crawler.index-page-crawler :as index-crawler]))
+            [topix-crawler.index-page-crawler :as index-crawler]
+            [topix-crawler.extract-post-uris :as extract-post-uris]))
 
 (def cmdline-options
   [["-c" "--crawl" "Crawl bro"]
    ["-e" "--extract C" "Extract topix forums from corpus-file"]
    ["-i" "--index F" "Step through index pages"]
-   [nil "--write-to F" "File to write to"]])
+   [nil "--write-to F" "File to write to"]
+   [nil "--topic-uris T" "Index pages file"]])
 
 (def topix-all-forums-uri "http://www.topix.com/forum/dir")
 
@@ -28,4 +30,8 @@
                              (slurp (:index options)))]
             (doseq [uri index-pages]
               (index-crawler/crawl uri
-                                   (:write-to options)))))))
+                                   (:write-to options))))
+
+          (:topic-uris options)
+          (let [index-pages-file (:topic-uris options)]
+            (extract-post-uris/index-page-records index-pages-file)))))
